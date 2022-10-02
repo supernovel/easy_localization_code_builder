@@ -30,9 +30,8 @@ class EasyLocalizationKeysGenerator extends Builder {
     switch (inputExtension.toLowerCase()) {
       case ".yaml":
       case ".yml":
-        messages = (loadYaml(await buildStep.readAsString(inputId)) as Map)
-            .cast<String, dynamic>();
-
+        final documet = loadYaml(await buildStep.readAsString(inputId));
+        messages = _convertYamlMapToMap(documet);
         break;
       case ".json":
         messages = (json.decode(await buildStep.readAsString(inputId)) as Map)
@@ -51,6 +50,20 @@ class EasyLocalizationKeysGenerator extends Builder {
     outputBuffer.writeln(code);
 
     await buildStep.writeAsString(outputId, outputBuffer.toString());
+  }
+
+  Map<String, dynamic> _convertYamlMapToMap(YamlMap yamlMap) {
+    final map = <String, dynamic>{};
+
+    for (final entry in yamlMap.entries) {
+      if (entry.value is YamlMap || entry.value is Map) {
+        map[entry.key.toString()] = _convertYamlMapToMap(entry.value);
+      } else {
+        map[entry.key.toString()] = entry.value.toString();
+      }
+    }
+
+    return map;
   }
 
   @override
