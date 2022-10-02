@@ -1,0 +1,44 @@
+{
+    "onboarding": {
+      "fullName":"FullName",
+      "welcome": "Welcome {fullName}",
+      "welcomeLower": "Welcome @.lower:onboarding.fullName",
+      "welcomeUpper": "Welcome @.upper:onboarding.fullName",
+      "welcomeCapitalize": "Welcome @.capitalize:onboarding.fullName",
+      "bye": "Bye {firstName}",
+      "greet":{
+        "male":"Hi man ;) {}",
+        "female":"Hello girl :) {}",
+        "other":"Hello {}"
+      },
+      "greetGenderNamedLinked": {
+        "male": "Hello Mr {lastName} and @:onboarding.welcome",
+        "female": "Hello Ms {lastName} and @:onboarding.bye"
+      },
+      "greetCombination": "@:onboarding.greet, @:onboarding.greetGenderNamedLinked"
+    },
+    "group": {
+      "money": {
+        "zero": "You not have money",
+        "one": "You have {} dollar",
+        "many": "You have {} dollars",
+        "other": "You have {} dollars"
+      },
+      "moneyArgs": {
+        "zero": "{} has no money",
+        "one": "{} has {} dollar",
+        "many": "{} has {} dollars",
+        "other": "{} has {} dollars"
+      },
+      "innerGroup": {
+        "msg":"{} are written in the {} language",
+        "msgNamed":"Easy localization are written in the {lang} language",
+        "msgMixed":"{} are written in the {lang} language",
+        "msgLinked":"{} are written in the {} language. @:msgMixed"
+      }
+    },
+    "msg":"{} are written in the {} language",
+    "msgNamed":"Easy localization are written in the {lang} language",
+    "msgMixed":"{} are written in the {lang} language",
+    "msgLinked":"{} are written in the {} language. @:msgMixed"
+  }
