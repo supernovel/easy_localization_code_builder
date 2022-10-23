@@ -1,5 +1,5 @@
-import 'package:easy_localization_keys_generator/model/translation_node.dart';
-import 'package:easy_localization_keys_generator/translation_model_builder.dart';
+import 'package:easy_localization_keys_generator/src/model/translation_node.dart';
+import 'package:easy_localization_keys_generator/src/translation_model_builder.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

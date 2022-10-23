@@ -1,47 +1,38 @@
 library easy_localization_keys_generator;
 
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:build/build.dart';
-import 'package:easy_localization_keys_generator/translation_code_generator.dart';
-import 'package:easy_localization_keys_generator/translation_model_builder.dart';
+import 'package:easy_localization_keys_generator/src/model/build_config.dart';
+import 'package:easy_localization_keys_generator/src/translation_code_generator.dart';
+import 'package:easy_localization_keys_generator/src/translation_model_builder.dart';
 import 'package:path/path.dart' as path;
-import 'package:yaml/yaml.dart';
+
+import 'src/utils.dart';
 
 /// A Calculator.
 class EasyLocalizationKeysGenerator extends Builder {
+  final BuildConfig config;
+
+  EasyLocalizationKeysGenerator(this.config);
+
   @override
   FutureOr<void> build(BuildStep buildStep) async {
     final inputId = buildStep.inputId;
     final inputPath = inputId.path;
     final inputExtension = path.extension(inputPath);
-    final outputPath = inputId.path
-        .replaceFirst('assets/', 'lib/generated/')
-        .replaceFirst(inputExtension, '.dart');
+    final inputFileName = path.basename(inputPath);
+    final outputFileName =
+        inputFileName.replaceFirst(inputExtension, '.g.dart');
+    final outputFilePath =
+        path.canonicalize(path.join(config.outputPath, outputFileName));
 
-    final outputId = AssetId(
-      inputId.package,
-      outputPath,
-    );
+    // Parse content
+    final String content = await buildStep.readAsString(inputId);
+    final Map<String, dynamic> messages =
+        parseDocument(content, inputExtension);
 
-    final Map<String, dynamic> messages;
-
-    switch (inputExtension.toLowerCase()) {
-      case ".yaml":
-      case ".yml":
-        final document = loadYaml(await buildStep.readAsString(inputId));
-        messages = _convertYamlMapToMap(document);
-        break;
-      case ".json":
-        messages = (json.decode(await buildStep.readAsString(inputId)) as Map)
-            .cast<String, dynamic>();
-        break;
-      default:
-        messages = {};
-        break;
-    }
-
+    // Build code
     final outputBuffer = StringBuffer('// Generated, do not edit\n');
 
     final model = buildTranslationTree(messages);
@@ -49,29 +40,18 @@ class EasyLocalizationKeysGenerator extends Builder {
 
     outputBuffer.writeln(code);
 
-    await buildStep.writeAsString(outputId, outputBuffer.toString());
-  }
-
-  Map<String, dynamic> _convertYamlMapToMap(YamlMap yamlMap) {
-    final map = <String, dynamic>{};
-
-    for (final entry in yamlMap.entries) {
-      if (entry.value is YamlMap || entry.value is Map) {
-        map[entry.key.toString()] = _convertYamlMapToMap(entry.value);
-      } else {
-        map[entry.key.toString()] = entry.value.toString();
-      }
-    }
-
-    return map;
+    // Write code
+    writeFile(outputFilePath, outputBuffer.toString());
   }
 
   @override
   Map<String, List<String>> get buildExtensions => const {
-        '^assets/{{}}.json': ['lib/generated/{{}}.dart'],
-        '^assets/{{}}.yaml': ['lib/generated/{{}}.dart'],
+        '.json': ['.g.dart'],
+        '.yaml': ['.g.dart'],
       };
 }
 
-Builder easyLocalizationKeysGenerator(BuilderOptions options) =>
-    EasyLocalizationKeysGenerator();
+/// Static entry point for build_runner
+Builder easyLocalizationKeysGenerator(BuilderOptions options) {
+  return EasyLocalizationKeysGenerator(BuildConfig.fromJson(options.config));
+}

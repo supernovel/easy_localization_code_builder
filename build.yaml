@@ -1,10 +1,20 @@
+targets:
+  $default:
+    builders:
+      easy_localization_keys_generator:easyLocalizationKeysGenerator:
+        generate_for: 
+          - assets/*.json
+          - assets/*.yaml
+        options:
+          output_path: './assets/generated'
+
 builders:
   easyLocalizationKeysGenerator:
     import: "package:easy_localization_keys_generator/easy_localization_keys_generator.dart"
     builder_factories: ["easyLocalizationKeysGenerator"]
     build_extensions: {
-      '^assets/{{}}.json': ['assets/generated/{{}}.dart'],
-      '^assets/{{}}.yaml': ['assets/generated/{{}}.dart'],
+      '.json': ['.g.dart'],
+      '.yaml': ['.g.dart'],
     }
     build_to: source
     auto_apply: root_package

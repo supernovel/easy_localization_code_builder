@@ -7,7 +7,10 @@ class AppLocalizations {
   _Group group = _Group();
 
   /// Source => "{} are written in the {} language"
-  String msg(String args0, String args1) {
+  String msg(
+    String args0,
+    String args1,
+  ) {
     return tr("msg", args: [args0, args1]);
   }
 
@@ -17,13 +20,20 @@ class AppLocalizations {
   }
 
   /// Source => "{} are written in the {lang} language"
-  String msgMixed(String args0, {required String lang}) {
+  String msgMixed(
+    String args0, {
+    required String lang,
+  }) {
     return tr("msgMixed", args: [args0], namedArgs: {"lang": lang});
   }
 
   /// Source => "{} are written in the {} language. @:msgMixed"
-  String msgLinked(String args0, String args1, String args2,
-      {required String lang}) {
+  String msgLinked(
+    String args0,
+    String args1,
+    String args2, {
+    required String lang,
+  }) {
     return tr("msgLinked",
         args: [args0, args1, args2], namedArgs: {"lang": lang});
   }
@@ -39,7 +49,10 @@ class _Group {
 
 class _InnerGroup {
   /// Source => "{} are written in the {} language"
-  String msg(String args0, String args1) {
+  String msg(
+    String args0,
+    String args1,
+  ) {
     return tr("msg", args: [args0, args1]);
   }
 
@@ -49,13 +62,20 @@ class _InnerGroup {
   }
 
   /// Source => "{} are written in the {lang} language"
-  String msgMixed(String args0, {required String lang}) {
+  String msgMixed(
+    String args0, {
+    required String lang,
+  }) {
     return tr("msgMixed", args: [args0], namedArgs: {"lang": lang});
   }
 
   /// Source => "{} are written in the {} language. @:msgMixed"
-  String msgLinked(String args0, String args1, String args2,
-      {required String lang}) {
+  String msgLinked(
+    String args0,
+    String args1,
+    String args2, {
+    required String lang,
+  }) {
     return tr("msgLinked",
         args: [args0, args1, args2], namedArgs: {"lang": lang});
   }
@@ -68,17 +88,26 @@ class _MoneyArgs {
   }
 
   /// Source => "{} has {} dollar"
-  String one(String args0, String args1) {
+  String one(
+    String args0,
+    String args1,
+  ) {
     return tr("one", args: [args0, args1]);
   }
 
   /// Source => "{} has {} dollars"
-  String many(String args0, String args1) {
+  String many(
+    String args0,
+    String args1,
+  ) {
     return tr("many", args: [args0, args1]);
   }
 
   /// Source => "{} has {} dollars"
-  String other(String args0, String args1) {
+  String other(
+    String args0,
+    String args1,
+  ) {
     return tr("other", args: [args0, args1]);
   }
 }
@@ -148,12 +177,18 @@ class _Onboarding {
 
 class _GreetGenderNamedLinked {
   /// Source => "Hello Mr {lastName} and @:onboarding.welcome"
-  String male({required String fullName, required String lastName}) {
+  String male({
+    required String fullName,
+    required String lastName,
+  }) {
     return tr("male", namedArgs: {"fullName": fullName, "lastName": lastName});
   }
 
   /// Source => "Hello Ms {lastName} and @:onboarding.bye"
-  String female({required String firstName, required String lastName}) {
+  String female({
+    required String firstName,
+    required String lastName,
+  }) {
     return tr("female",
         namedArgs: {"firstName": firstName, "lastName": lastName});
   }
