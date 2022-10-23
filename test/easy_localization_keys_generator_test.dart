@@ -1,5 +1,4 @@
-import 'package:easy_localization_keys_generator/translation_code_generator.dart';
-import 'package:easy_localization_keys_generator/translation_model.dart';
+import 'package:easy_localization_keys_generator/model/translation_node.dart';
 import 'package:easy_localization_keys_generator/translation_model_builder.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -7,11 +6,15 @@ void main() {
   group("build text node", () {
     // "Welcome"
     test('default', () {
-      final textNode =
-          TranslationModelBuilder.buildTextNode("message", "Welcome");
+      final textNode = buildNode("message", "Welcome");
 
       expect(textNode is TranslationNode, true);
-      expect(textNode.path, "message");
+
+      if (textNode is! TranslationNode) {
+        return;
+      }
+
+      expect(textNode.key, "message");
       expect(textNode.unnamedArgCount, 0);
       expect(textNode.namedArgNameSet.isEmpty, true);
       expect(textNode.linkKeySet.isEmpty, true);
@@ -19,11 +22,16 @@ void main() {
 
     // "{} are written in the {} language"
     test('with Args', () {
-      final textNode = TranslationModelBuilder.buildTextNode(
-          "message", "{} are written in the {} language");
+      final textNode =
+          buildNode("message", "{} are written in the {} language");
 
       expect(textNode is TranslationNode, true);
-      expect(textNode.path, "message");
+
+      if (textNode is! TranslationNode) {
+        return;
+      }
+
+      expect(textNode.key, "message");
       expect(textNode.unnamedArgCount, 2);
       expect(textNode.namedArgNameSet.isEmpty, true);
       expect(textNode.linkKeySet.isEmpty, true);
@@ -31,11 +39,16 @@ void main() {
 
     // "Easy localization are written in the {lang} language"
     test('with Named Arg', () {
-      final textNode = TranslationModelBuilder.buildTextNode(
+      final textNode = buildNode(
           "message", "Easy localization are written in the {lang} language");
 
       expect(textNode is TranslationNode, true);
-      expect(textNode.path, "message");
+
+      if (textNode is! TranslationNode) {
+        return;
+      }
+
+      expect(textNode.key, "message");
       expect(textNode.unnamedArgCount, 0);
       expect(textNode.namedArgNameSet.isNotEmpty, true);
       expect(textNode.namedArgNameSet.length, 1);
@@ -44,11 +57,16 @@ void main() {
     });
 
     test('with Named Args', () {
-      final textNode = TranslationModelBuilder.buildTextNode(
-          "message", "{target} are written in the {lang} language");
+      final textNode =
+          buildNode("message", "{target} are written in the {lang} language");
 
       expect(textNode is TranslationNode, true);
-      expect(textNode.path, "message");
+
+      if (textNode is! TranslationNode) {
+        return;
+      }
+
+      expect(textNode.key, "message");
       expect(textNode.unnamedArgCount, 0);
       expect(textNode.namedArgNameSet.isNotEmpty, true);
       expect(textNode.namedArgNameSet.length, 2);
@@ -58,11 +76,16 @@ void main() {
     });
 
     test('with Link key', () {
-      final textNode = TranslationModelBuilder.buildTextNode("message",
+      final textNode = buildNode("message",
           "Easy localization are written in the en language. @:msgMixed");
 
       expect(textNode is TranslationNode, true);
-      expect(textNode.path, "message");
+
+      if (textNode is! TranslationNode) {
+        return;
+      }
+
+      expect(textNode.key, "message");
       expect(textNode.unnamedArgCount, 0);
       expect(textNode.namedArgNameSet.isEmpty, true);
       expect(textNode.linkKeySet.isNotEmpty, true);
@@ -72,11 +95,16 @@ void main() {
 
     // "Welcome @.lower:onboarding.fullName"
     test('with Link key, modifier', () {
-      final textNode = TranslationModelBuilder.buildTextNode(
-          "message", "Welcome @.lower:onboarding.fullName");
+      final textNode =
+          buildNode("message", "Welcome @.lower:onboarding.fullName");
 
       expect(textNode is TranslationNode, true);
-      expect(textNode.path, "message");
+
+      if (textNode is! TranslationNode) {
+        return;
+      }
+
+      expect(textNode.key, "message");
       expect(textNode.unnamedArgCount, 0);
       expect(textNode.namedArgNameSet.isEmpty, true);
       expect(textNode.linkKeySet.isNotEmpty, true);
@@ -86,11 +114,16 @@ void main() {
 
     // "{} are written in the {lang} language. @:msgMixed"
     test('with Mixed feature', () {
-      final textNode = TranslationModelBuilder.buildTextNode(
+      final textNode = buildNode(
           "message", "{} are written in the {lang} language. @:msgMixed");
 
       expect(textNode is TranslationNode, true);
-      expect(textNode.path, "message");
+
+      if (textNode is! TranslationNode) {
+        return;
+      }
+
+      expect(textNode.key, "message");
       expect(textNode.unnamedArgCount, 1);
       expect(textNode.namedArgNameSet.isNotEmpty, true);
       expect(textNode.namedArgNameSet.length, 1);
@@ -103,68 +136,93 @@ void main() {
 
   group("gender node", () {
     test('default', () {
-      final genderNode = TranslationModelBuilder.buildGenderNode("message", {
+      final genderNode = buildNode("message", {
         "male": "Hi man ;)",
         "female": "Hello girl :)",
         "other": "Hello",
       });
 
       expect(genderNode is TranslationNode, true);
-      expect(genderNode.path, "message");
+
+      if (genderNode is! TranslationNode) {
+        return;
+      }
+
+      expect(genderNode.key, "message");
       expect(genderNode.unnamedArgCount, 0);
       expect(genderNode.namedArgNameSet.isEmpty, true);
       expect(genderNode.linkKeySet.isEmpty, true);
     });
 
     test('with unnamed args', () {
-      final genderNode1 = TranslationModelBuilder.buildGenderNode("message", {
+      final genderNode1 = buildNode("message", {
         "male": "Hi man ;) {}",
         "female": "Hello girl :) {}",
         "other": "Hello {}"
       });
 
       expect(genderNode1 is TranslationNode, true);
-      expect(genderNode1.path, "message");
+
+      if (genderNode1 is! TranslationNode) {
+        return;
+      }
+
+      expect(genderNode1.key, "message");
       expect(genderNode1.unnamedArgCount, 1);
       expect(genderNode1.namedArgNameSet.isEmpty, true);
       expect(genderNode1.linkKeySet.isEmpty, true);
 
-      final genderNode2 = TranslationModelBuilder.buildGenderNode("message", {
+      final genderNode2 = buildNode("message", {
         "male": "Hi man ;)",
         "female": "Hello girl :)",
         "other": "Hello {}"
       });
 
       expect(genderNode2 is TranslationNode, true);
-      expect(genderNode2.path, "message");
+
+      if (genderNode2 is! TranslationNode) {
+        return;
+      }
+
+      expect(genderNode2.key, "message");
       expect(genderNode2.unnamedArgCount, 1);
       expect(genderNode2.namedArgNameSet.isEmpty, true);
       expect(genderNode2.linkKeySet.isEmpty, true);
     });
 
     test('with named args', () {
-      final genderNode1 = TranslationModelBuilder.buildGenderNode("message", {
+      final genderNode1 = buildNode("message", {
         "male": "Hi man ;) {name}",
         "female": "Hello girl :) {name}",
         "other": "Hello {name}"
       });
 
       expect(genderNode1 is TranslationNode, true);
-      expect(genderNode1.path, "message");
+
+      if (genderNode1 is! TranslationNode) {
+        return;
+      }
+
+      expect(genderNode1.key, "message");
       expect(genderNode1.unnamedArgCount, 0);
       expect(genderNode1.namedArgNameSet.isNotEmpty, true);
       expect(genderNode1.namedArgNameSet.length, 1);
       expect(genderNode1.namedArgNameSet.contains("name"), true);
       expect(genderNode1.linkKeySet.isEmpty, true);
 
-      final genderNode2 = TranslationModelBuilder.buildGenderNode("message", {
+      final genderNode2 = buildNode("message", {
         "male": "Hi man ;)",
         "female": "Hello girl :)",
         "other": "Hello {name}"
       });
 
       expect(genderNode2 is TranslationNode, true);
-      expect(genderNode2.path, "message");
+
+      if (genderNode2 is! TranslationNode) {
+        return;
+      }
+
+      expect(genderNode2.key, "message");
       expect(genderNode2.unnamedArgCount, 0);
       expect(genderNode2.namedArgNameSet.isNotEmpty, true);
       expect(genderNode2.namedArgNameSet.length, 1);
@@ -173,28 +231,38 @@ void main() {
     });
 
     test('with link keys', () {
-      final genderNode1 = TranslationModelBuilder.buildGenderNode("message", {
+      final genderNode1 = buildNode("message", {
         "male": "Hi man ;) @:user.fullName",
         "female": "Hello girl :) @:user.fullName",
         "other": "Hello @:user.fullName"
       });
 
       expect(genderNode1 is TranslationNode, true);
-      expect(genderNode1.path, "message");
+
+      if (genderNode1 is! TranslationNode) {
+        return;
+      }
+
+      expect(genderNode1.key, "message");
       expect(genderNode1.unnamedArgCount, 0);
       expect(genderNode1.namedArgNameSet.isEmpty, true);
       expect(genderNode1.linkKeySet.isNotEmpty, true);
       expect(genderNode1.linkKeySet.length, 1);
       expect(genderNode1.linkKeySet.contains("user.fullName"), true);
 
-      final genderNode2 = TranslationModelBuilder.buildGenderNode("message", {
+      final genderNode2 = buildNode("message", {
         "male": "Hi man ;)",
         "female": "Hello girl :)",
         "other": "Hello @:user.fullName"
       });
 
       expect(genderNode2 is TranslationNode, true);
-      expect(genderNode2.path, "message");
+
+      if (genderNode2 is! TranslationNode) {
+        return;
+      }
+
+      expect(genderNode2.key, "message");
       expect(genderNode2.unnamedArgCount, 0);
       expect(genderNode2.namedArgNameSet.isEmpty, true);
       expect(genderNode2.linkKeySet.isNotEmpty, true);
@@ -203,14 +271,19 @@ void main() {
     });
 
     test('with mixed feature', () {
-      final genderNode1 = TranslationModelBuilder.buildGenderNode("message", {
+      final genderNode1 = buildNode("message", {
         "male": "Hi man ;) {} {name} @:user.fullName",
         "female": "Hello girl :) {} {name} @:user.fullName",
         "other": "Hello {} {name} @:user.fullName"
       });
 
       expect(genderNode1 is TranslationNode, true);
-      expect(genderNode1.path, "message");
+
+      if (genderNode1 is! TranslationNode) {
+        return;
+      }
+
+      expect(genderNode1.key, "message");
       expect(genderNode1.unnamedArgCount, 1);
       expect(genderNode1.namedArgNameSet.isNotEmpty, true);
       expect(genderNode1.namedArgNameSet.length, 1);
@@ -219,14 +292,19 @@ void main() {
       expect(genderNode1.linkKeySet.length, 1);
       expect(genderNode1.linkKeySet.contains("user.fullName"), true);
 
-      final genderNode2 = TranslationModelBuilder.buildGenderNode("message", {
+      final genderNode2 = buildNode("message", {
         "male": "Hi man ;) {}",
         "female": "Hello girl :) {name}",
         "other": "Hello @:user.fullName"
       });
 
       expect(genderNode2 is TranslationNode, true);
-      expect(genderNode2.path, "message");
+
+      if (genderNode2 is! TranslationNode) {
+        return;
+      }
+
+      expect(genderNode2.key, "message");
       expect(genderNode2.unnamedArgCount, 1);
       expect(genderNode2.namedArgNameSet.isNotEmpty, true);
       expect(genderNode2.namedArgNameSet.length, 1);
@@ -238,7 +316,7 @@ void main() {
   });
 
   test('build tree', () {
-    final tree = TranslationModelBuilder.buildTree({
+    final tree = buildTree({
       "user": {"fullName": "myName"},
       "unnamedArgsMessage": "{} are written in the {} language",
       "namedArgsMessage": "{name} are written in the {language} language",
@@ -253,7 +331,7 @@ void main() {
     expect(tree.children.length, 5);
 
     final userNode =
-        tree.children.where((element) => element.path == "user").first;
+        tree.children.where((element) => element.key == "user").first;
 
     expect(userNode.children.length, 1);
 
@@ -261,7 +339,7 @@ void main() {
 
     expect(fullNameNode is TextNode, true);
 
-    expect(fullNameNode.path, "fullName");
+    expect(fullNameNode.key, "fullName");
     expect((fullNameNode as TextNode).value, "myName");
   });
 }

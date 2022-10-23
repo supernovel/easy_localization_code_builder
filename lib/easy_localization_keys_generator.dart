@@ -30,8 +30,8 @@ class EasyLocalizationKeysGenerator extends Builder {
     switch (inputExtension.toLowerCase()) {
       case ".yaml":
       case ".yml":
-        final documet = loadYaml(await buildStep.readAsString(inputId));
-        messages = _convertYamlMapToMap(documet);
+        final document = loadYaml(await buildStep.readAsString(inputId));
+        messages = _convertYamlMapToMap(document);
         break;
       case ".json":
         messages = (json.decode(await buildStep.readAsString(inputId)) as Map)
@@ -44,8 +44,8 @@ class EasyLocalizationKeysGenerator extends Builder {
 
     final outputBuffer = StringBuffer('// Generated, do not edit\n');
 
-    final model = TranslationModelBuilder.build(messages);
-    final code = TranslationCodeGenerator.build(model);
+    final model = buildTranslationTree(messages);
+    final code = buildCode(model);
 
     outputBuffer.writeln(code);
 

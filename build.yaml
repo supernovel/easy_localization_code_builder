@@ -3,8 +3,8 @@ builders:
     import: "package:easy_localization_keys_generator/easy_localization_keys_generator.dart"
     builder_factories: ["easyLocalizationKeysGenerator"]
     build_extensions: {
-      '^assets/{{}}.json': ['lib/generated/{{}}.dart'],
-      '^assets/{{}}.yaml': ['lib/generated/{{}}.dart'],
+      '^assets/{{}}.json': ['assets/generated/{{}}.dart'],
+      '^assets/{{}}.yaml': ['assets/generated/{{}}.dart'],
     }
     build_to: source
     auto_apply: root_package

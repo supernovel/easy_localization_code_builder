@@ -1,112 +1,98 @@
-import 'translation_model.dart';
+import 'model/translation_node.dart';
+import 'model/translation_node_utils.dart';
 
-class TranslationModelBuilder {
-  static Node build(Map<String, dynamic> translationData) {
-    final rootNode = buildTree(translationData);
+Node buildTranslationTree(Map<String, dynamic> translationData) {
+  final tree = buildTree(translationData);
 
-    return replaceLink(rootNode);
-  }
+  return processLink(tree);
+}
 
-  static Node replaceLink(Node root) {
-    final nodeMap = flattenTree(root);
+// Process Tree
+Node processLink(Node root) {
+  final nodeMap = generateNodeMap(root);
 
-    return root.mapLeafNode((node) {
-      if (node is! TranslationNode) {
-        return node;
-      }
-
-      if (node.requireLink) {
-        node.link(nodeMap);
-      }
-
-      return node;
-    });
-  }
-
-  static Map<String, Node> flattenTree(Node root) {
-    return _flattenTree(root);
-  }
-
-  static Node buildTree(Map<String, dynamic> translationData) {
-    return buildGroupNode("", translationData);
-  }
-
-  static Node buildNode(String path, dynamic value) {
-    if (value is! Map<String, dynamic>) {
-      return buildTextNode(path, value.toString());
+  return mapLeapNode(root, (child) {
+    if (child is! TranslationNode) {
+      return child;
     }
 
+    final requireLink = child.linkKeySet.isNotEmpty;
+
+    if (requireLink) {
+      return linkFromNodeMap(child, nodeMap);
+    }
+
+    return child;
+  });
+}
+
+Map<String, Node> generateNodeMap(
+  Node node, {
+  String? parentPath,
+}) {
+  final currentPath = parentPath ?? node.key;
+
+  String getChildPath(String childKey) {
+    return currentPath.isNotEmpty ? "$currentPath.$childKey" : childKey;
+  }
+
+  return node.children.fold({}, (previousValue, child) {
+    if (child is LeafNode) {
+      final childPath = getChildPath(child.key);
+
+      return {
+        ...previousValue,
+        childPath: child,
+      };
+    } else {
+      return {
+        ...previousValue,
+        ...generateNodeMap(
+          child,
+          parentPath: getChildPath(child.key),
+        )
+      };
+    }
+  });
+}
+
+// Build tree
+Node buildTree(Map<String, dynamic> translationData) {
+  return buildGroupNode("", translationData);
+}
+
+Node buildNode(String key, dynamic value) {
+  if (value is! Map<String, dynamic>) {
+    return TextNode(key: key, value: value.toString());
+  }
+
+  if (value is Map<String, String>) {
     if (isPluralValue(value)) {
-      return buildPluralNode(path, value);
+      return PluralNode(
+        key: key,
+        plural: value,
+      );
     }
 
     if (isGenderValue(value)) {
-      return buildGenderNode(path, value);
-    }
-
-    return buildGroupNode(path, value);
-  }
-
-  static bool isPluralValue(Map<String, dynamic> value) {
-    return _hasOnlyThatKey(value, PluralNode.preservedKeywords);
-  }
-
-  static bool isGenderValue(Map<String, dynamic> value) {
-    return _hasOnlyThatKey(value, GenderNode.preservedKeywords);
-  }
-
-  static GroupNode buildGroupNode(String path, Map<String, dynamic> value) {
-    return GroupNode(
-      path: path,
-      children: value
-          .map((key, value) {
-            return MapEntry(
-              key,
-              buildNode(GroupNode.buildChildPath(path, key), value),
-            );
-          })
-          .values
-          .toList(),
-    );
-  }
-
-  static TextNode buildTextNode(String path, String value) {
-    return TextNode(path: path, value: value);
-  }
-
-  static GenderNode buildGenderNode(String path, Map<String, dynamic> value) {
-    return GenderNode(path: path, gender: value);
-  }
-
-  static PluralNode buildPluralNode(String path, Map<String, dynamic> value) {
-    return PluralNode(path: path, plural: value);
-  }
-}
-
-bool _hasOnlyThatKey(Map<String, dynamic> value, List<String> expectedKeys) {
-  final keys = [...value.keys];
-
-  keys.removeWhere((key) => expectedKeys.contains(key));
-
-  return keys.isEmpty;
-}
-
-Map<String, Node> _flattenTree(Node rootNode) {
-  final Map<String, Node> result = {};
-
-  for (final node in rootNode.children) {
-    if (node is LeafNode) {
-      result.addAll({
-        node.path: node,
-      });
-    } else {
-      final flattenedSubTree = _flattenTree(node);
-
-      result.addAll(flattenedSubTree.map((path, value) {
-        return MapEntry(path, value);
-      }));
+      return GenderNode(key: key, gender: value);
     }
   }
 
-  return result;
+  return buildGroupNode(key, value);
+}
+
+TranslationGroupNode buildGroupNode(String key, Map<String, dynamic> value) {
+  return TranslationGroupNode(
+    key: key,
+    children: value
+        .map((key, value) {
+          return MapEntry(
+            key,
+            buildNode(key, value),
+          );
+        })
+        .values
+        .toList(),
+  );
 }
